@@ -31,7 +31,8 @@ def create_new_population(m_g: np.ndarray, std_dev_g: float, covm_g: np.ndarray,
     Returns:
         new population of offspring as a numpy array
     """
-
+    
+    assert k > 0, "Number of offspring must be greater than 0"
     offsprings: list = []
     for _ in range(k):
         offsprings.append(probe_normal_dist_offspring(m_g, std_dev_g, covm_g))
