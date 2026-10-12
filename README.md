@@ -49,3 +49,17 @@ plot_fitness_history(cma_es.history, "fitness_history.png")
 - `verbose` - print the best fitness after each generation
 
 The population size is taken from `init_pop`. Lower fitness is better.
+
+#### Limitations
+
+This is a simplified version of CMA-ES. Compared to the full algorithm described in Hansen's tutorial, it is missing:
+
+- **Step-size adaptation** - `step_size` stays fixed for the whole run. Full CMA-ES adapts it every generation using cumulative step-size adaptation (CSA) with the evolution path $p_\sigma$, so it can take large steps far from the optimum and small steps near it.
+- **Evolution paths and rank-one update** - the covariance matrix is updated only with the rank-$\mu$ update. Full CMA-ES also tracks the evolution path $p_c$ and uses it for a rank-one update, which helps learn directions the search keeps moving in.
+- **Covariance of the steps** - the covariance is estimated around the mean of the selected points. Full CMA-ES uses the steps from the old mean scaled by the step size, $y_i = (x_i - m_{old}) / \sigma$. Without this, the covariance shrinks every generation and the search can stop before it reaches the optimum.
+- **Weighted recombination** - all selected points have equal weights. Full CMA-ES gives better points larger weights (log-decreasing) and can also use negative weights for the worst points.
+- **Default parameters** - population size, learning rates and damping are set by hand. Full CMA-ES derives them from the problem dimension $n$, e.g. population size $\lambda = 4 + \lfloor 3 \ln n \rfloor$.
+- **Initialization** - the initial mean and covariance are estimated from `init_pop`. Full CMA-ES starts from a single point $x_0$, an initial step size $\sigma_0$ and $C = I$.
+- **Stopping criteria** - the algorithm always runs a fixed number of generations. Full CMA-ES stops on fitness tolerance, stagnation or a badly conditioned covariance matrix.
+- **Restarts** - no restart strategies such as IPOP or BIPOP, which help on multimodal functions like Rastrigin.
+- **Constraints** - no handling of bounds or constraints.
