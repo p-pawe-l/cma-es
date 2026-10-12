@@ -13,7 +13,10 @@ def probe_normal_dist_offspring(m_g: np.ndarray, step_size: float, covm_g: np.nd
         offspring sampled from the normal distribution
     """
 
-    offspring: np.ndarray = step_size * np.random.multivariate_normal(m_g, covm_g)
+    offspring: np.ndarray = step_size * np.random.multivariate_normal(np.zeros_like(m_g), covm_g)
+    # Adding m_g afterwards beacuse we don`t want to m_g be scaled by step_size
+    # in np.random.multivariate_normal function.
+    offspring: np.ndarray = m_g + offspring
     return offspring
 
 
@@ -65,7 +68,7 @@ def estimate_covariance_matrix(points: list[np.ndarray], weights: list[float]) -
     cov: np.ndarray = np.zeros((len(points[0]), len(points[0])))
     for point, weight in zip(points, weights):
         diff: np.ndarray = point - wmean
-        cov += weight * (diff @ diff.T)
+        cov += weight * np.outer(diff, diff)
     return cov
 
 
